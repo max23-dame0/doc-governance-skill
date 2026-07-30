@@ -35,6 +35,24 @@ description: 平台无关的通用文档治理引擎。为任意 AI 编程工具
 - `[Delta]` 描述**做过什么**（计划、审查、报告、发布）→ 完成后不再改动，只新增
 - `[Cold]` 外部引入的知识（参考、调研）→ 仅作参考，不与代码同步
 
+## Harness 文件约定（运行态 / 热层）
+
+> 让 AI 编程工具每次会话都能"热启动"并持久化跨会话状态。`documents/` 语料是冷层；本节约定的是根目录**运行态文件**（热层）。详见 `references/documentation-governance.md §8`。
+>
+> **独立性与并存**：本节约定的命名、角色、结构与主流 harness 工程实践一致——因此本 Skill **可独立使用，也可与任何"harness 搭建类 Skill"并存，但本 Skill 不依赖、也不 require 任何此类 Skill**。
+
+| 文件 | 角色 | 模板 | 是否套用 Frontmatter 受控词表 |
+|------|------|------|------------------------------|
+| `AGENTS.md` / `CLAUDE.md` | 入口路由器（80–200 行） | `agents-md-template.md` | 否（运行态） |
+| `MEMORY.md` | 长期记忆（冷热分层 + Auto Memory） | `memory-template.md` | 否 |
+| `PROGRESS.md` | 状态持久化三件套之一（三行摘要） | `progress-template.md` | 否 |
+| `DECISIONS.md` | 决策日志 | `decisions-template.md` | 否 |
+| `documents/05-reference/tech-traps.md` | 冷记忆落点（坑点库） | `tech-traps-template.md` | **是**（属语料） |
+
+**关键区分**：运行态文件（上表前 4 个）是 Agent 工作台，**不强制** `doc_id`/`category`/`role`；`tech-traps.md` 属 `documents/` 语料，正常套用 §2.1。
+
+**兼容原则**（与 harness 工程实践对齐，详见 §8.8）：仓库即真实来源、渐进式披露、状态持久化三件套（PROGRESS+DECISIONS+Git）、WIP 显式登记（≤3）、清洁状态闭环（含部署后/E2E 验证）、指令与记忆分离、三层文档分工不重复抄写。
+
 ## 五维工作流
 
 ### 1. 诊断工作流（Diagnose）
@@ -87,8 +105,14 @@ description: 平台无关的通用文档治理引擎。为任意 AI 编程工具
 1. 按 `references/documentation-governance.md §3.1` 创建 `documents/` 标准目录
 2. 复制 `references/templates/` 六个模板到 `documents/templates/`
 3. 创建 `documents/README.md` 索引骨架（§3.3 五要素）
-4. 在目标项目根目录建立 harness 文件（`AGENTS.md` / `PROGRESS.md` / `DECISIONS.md` / `MEMORY.md`，对应热层常驻指令）
-5. 按 `references/platform-adapter.md` 把治理规则接入当前 AI 编程工具的规则机制
+4. 在目标项目根目录建立 harness 运行态文件，从 `references/templates/` 取对应模板：
+   - `AGENTS.md` / `CLAUDE.md`（入口路由器，80–200 行）→ `agents-md-template.md`
+   - `MEMORY.md`（长期记忆，冷热分层 + Auto Memory）→ `memory-template.md`
+   - `PROGRESS.md`（状态看板 + 三行摘要）→ `progress-template.md`
+   - `DECISIONS.md`（决策日志）→ `decisions-template.md`
+   - `documents/05-reference/tech-traps.md`（坑点库，套用 Frontmatter）→ `tech-traps-template.md`
+   （命名与平台映射见 `references/platform-adapter.md`；以上文件**不依赖**任何 harness 搭建类 Skill）
+5. 按 `references/platform-adapter.md` 把治理规则接入当前 AI 编程工具的规则机制，并把本文档 §8 要点精简进热层常驻文件（如 `global`）
 
 ## 核心速查
 
@@ -118,7 +142,7 @@ author: "{作者/团队}"
 |------|------|
 | `references/documentation-governance.md` | 完整治理规则（创建/格式/组织/Agent 友好/评分/反模式/接入） |
 | `references/platform-adapter.md` | 三层记忆模型与各 AI 编程工具接入详解 |
-| `references/templates/` | 6 个文档模板：ADR、通用文档、审计、BUG 修复、验证、发布清单 |
+| `references/templates/` | 6 个文档模板（ADR、通用文档、审计、BUG 修复、验证、发布清单）+ 5 个 harness 运行态模板（入口/MEMORY/PROGRESS/DECISIONS/tech-traps） |
 
 ## 平台适配
 

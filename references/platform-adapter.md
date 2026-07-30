@@ -58,7 +58,7 @@
 1. 在目标项目根目录创建 `documents/`，按 `references/documentation-governance.md §3.1` 建立子目录（`00-architecture/`…`05-reference/`、`api/`、`archive/`、`templates/`、`images/`）。
 2. 将本 Skill 的 `references/templates/` 六个模板复制到目标项目 `documents/templates/`。
 3. 在 `documents/` 下创建 `README.md` 索引入口，按 §3.3 五要素维护。
-4. （可选）在目标项目根目录建立 harness 文件：`AGENTS.md`（操作手册：Setup & Commands / Coding Standards / Project Structure / Workflow / Do Not）、`PROGRESS.md`（进度快照）、`DECISIONS.md`（决策日志）、`MEMORY.md`（长期记忆）。这些文件对应"热层"，承载项目上下文。
+4. （可选但推荐）在目标项目根目录建立 harness 运行态文件，从本 Skill 的 `references/templates/` 取对应模板：`agents-md-template.md`（→ `AGENTS.md`/`CLAUDE.md`）、`memory-template.md`（→ `MEMORY.md`）、`progress-template.md`（→ `PROGRESS.md`）、`decisions-template.md`（→ `DECISIONS.md`）、`tech-traps-template.md`（→ `documents/05-reference/tech-traps.md`）。这些文件对应"热层"，承载项目上下文。命名与放置见下一节。
 5. 将 `documents/` 接入对应平台的"冷层"检索机制（见第一节映射表）。
 
 ---
@@ -72,3 +72,32 @@
 3. 把 `references/documentation-governance.md` 的 §2.1、§3.3 要点贴入 `AGENTS.md` 或对应平台规则文件。
 
 后续随项目成熟度再补全温层规则与评分审计工作流。
+
+---
+
+## 四、Harness 文件的平台命名与放置
+
+`doc-governance` 的 harness 文件约定（详见 `references/documentation-governance.md §8`）与主流 harness 工程实践命名一致，因此**可与任何"harness 搭建类 Skill"在同一项目并存且不冲突**——本 Skill 不依赖、也不 require 任何此类 Skill。各平台下入口文件名与运行态文件放置如下：
+
+| 平台 | 入口路由器 | MEMORY | PROGRESS | DECISIONS | 分层规则（热/温） |
+|------|-----------|--------|----------|-----------|-------------------|
+| **CodeBuddy** | `AGENTS.md` 或 `.codebuddy/rules/global.md` | `.codebuddy/memory/MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `.codebuddy/rules/*.mdc`（`globs:` 限定温层） |
+| **Claude Code** | `CLAUDE.md` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `CLAUDE.md` 内 `@import` 子文件 |
+| **Cursor** | `.cursorrules` 或 `AGENTS.md` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `.cursor/rules/*.mdc` |
+| **Windsurf** | `.windsurfrules` 或 `AGENTS.md` | `.codeium/windsurf.memories` / `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | 规则文件 |
+| **Cline** | `CLAUDE.md` / `.clinerules` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `.clinerules` 分段 |
+| **Aider** | `CONVENTIONS.md` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | 子模块 `CONVENTIONS.md` |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | 仓库内 `**/*.md` 自然检索 |
+| **OpenAI Codex** | `AGENTS.md` / `codex.md` | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `AGENTS.md` 分节 |
+| **通用标准** | `AGENTS.md`（多工具已支持） | `MEMORY.md` | `PROGRESS.md` | `DECISIONS.md` | `documents/05-reference/` 参考 |
+
+**并存不冲突要点**：
+
+- **命名一致**：无论用哪套 Skill，入口都叫 `AGENTS.md`/`CLAUDE.md`、记忆都叫 `MEMORY.md`、进度都叫 `PROGRESS.md`、决策都叫 `DECISIONS.md`——文件互不覆盖。
+- **职责单一**：`doc-governance` 只负责 `documents/` 语料治理 + 这套 harness 文件的格式约定；不接管其它 Skill 的生成逻辑。
+- **运行态 vs 语料分离**：`AGENTS/PROGRESS/DECISIONS/MEMORY` 是运行态文件，**不套用** `documents/` 的 Frontmatter 受控词表，避免重复摩擦。
+- **冷记忆落点统一**：坑点都沉淀到 `documents/05-reference/tech-traps.md`，记忆文件只留指针。
+
+---
+
+## 五、最小可用接入（推荐起点）

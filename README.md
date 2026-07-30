@@ -11,7 +11,8 @@
 - **完整 Frontmatter 受控词表**：`doc_id`/`title`/`category`/`role`/`status`/`date`/`author` 必填，`category` 与目录强映射。
 - **索引五要素**：`documents/README.md` 作为 Agent 检索起点，含场景查找表、目录树、分类索引、ADR 索引、模板索引。
 - **反模式清单 + 质量评分**：固化链接健康度、索引注册、代码一致性等必检项。
-- **自包含分发**：内置治理规则与 6 个文档模板，开箱即用。
+- **Harness 文件治理**：内置根目录运行态文件约定（`AGENTS`/`MEMORY`/`PROGRESS`/`DECISIONS`/技术陷阱库）与 5 个模板，让 AI 工具每次会话热启动、跨会话状态持久化。
+- **自包含分发**：内置治理规则、11 个模板（6 文档 + 5 harness），开箱即用。
 
 ## 支持的 AI 编程工具
 
@@ -56,7 +57,12 @@ doc-governance/
         ├── audit-report-template.md           # 审计报告模板
         ├── bugfix-report-template.md          # BUG 修复报告模板
         ├── verification-report-template.md     # 验证报告模板
-        └── release-checklist-template.md      # 发布检查清单模板
+        ├── release-checklist-template.md      # 发布检查清单模板
+        ├── agents-md-template.md              # Harness 入口/路由器模板
+        ├── memory-template.md                 # MEMORY 长期记忆模板
+        ├── progress-template.md               # PROGRESS 状态看板模板
+        ├── decisions-template.md              # DECISIONS 决策日志模板
+        └── tech-traps-template.md             # 技术陷阱库模板（冷记忆落点）
 ```
 
 ## 设计理念
@@ -64,3 +70,7 @@ doc-governance/
 文档会腐坏——不复盘的文档比没有文档更危险。本 Skill 把"可检索（索引 + frontmatter）、可审计（双维度评分 + 反模式）、可演进（生命周期 + 角色分层）"固化为可执行的约束，并刻意与具体 AI 编程工具解耦，使同一套治理逻辑可跨 CodeBuddy、Claude Code、Cursor、Windsurf、Cline、Aider、Copilot、Codex 复用。
 
 治理规则本身（`references/documentation-governance.md`）与平台接入说明（`references/platform-adapter.md`）分离：前者是稳定知识，后者随工具演进而更新。
+
+### 与 harness 搭建类 Skill 的关系
+
+本 Skill 的 harness 文件命名、角色、结构与主流 harness 工程实践一致，**可与任何"harness 搭建类 Skill"在同一项目并存且不冲突**；但本 Skill **不依赖、也不 require 任何此类 Skill**——独立复制即可完整工作。运行态文件（`AGENTS`/`PROGRESS`/`DECISIONS`/`MEMORY`）不套用 `documents/` 的 Frontmatter 受控词表，避免重复摩擦。
